@@ -2,8 +2,8 @@ class Grid:
     def __init__(self, width: int = 5, height: int = 5):
         self.width = width
         self.height = height
-        self.x = 0
-        self.y = 0
+        self.x = 2
+        self.y = 2
 
     def move_down(self) -> bool:
         if self.y > 0:

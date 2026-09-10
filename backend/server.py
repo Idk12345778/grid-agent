@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from mcp.server.transport_security import TransportSecuritySettings
 
 # Ensure backend directory is in sys.path when running from any cwd
 backend_dir = str(Path(__file__).parent.resolve())
@@ -61,10 +62,18 @@ def start_api():
     server = HTTPServer(("localhost", 8000), PositionHandler)
     server.serve_forever()
 
+security = TransportSecuritySettings(
+    allowed_hosts = [
+        "grid-agent.onrender.com",
+        "grid-agent.onrender.com:*"
+    ],
+)
 if __name__ == "__main__":
     threading.Thread(target = start_api, daemon=True).start()
     mcp.run(
         transport = "streamable-http",
         host = "0.0.0.0",
-        port = int(os.environ.get("PORT", 8001))
+        port = int(os.environ.get("PORT", 8001)), 
+        transport_security = security,
+
     )

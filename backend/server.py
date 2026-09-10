@@ -1,10 +1,10 @@
 import sys
 import os
 from pathlib import Path
-import json
-import threading
-from http.server import BaseHTTPRequestHandler, HTTPServer
 from mcp.server.transport_security import TransportSecuritySettings
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+
 
 # Ensure backend directory is in sys.path when running from any cwd
 backend_dir = str(Path(__file__).parent.resolve())
@@ -17,6 +17,14 @@ from grid import Grid
 mcp = MCPServer("Grid Server")
 
 grid = Grid(5, 5)
+
+@mcp.custom_route("/position", methods = ["GET"])
+async def position(request: Request) :
+    return JSONResponse(
+        grid.get_position(),
+        headers = {"Access-Control-Allow-Origin": "*"},
+    )
+
 
 @mcp.tool()
 def move_up() -> bool:
@@ -44,24 +52,6 @@ def get_position() -> dict:
     return grid.get_position()
 
 
-class PositionHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == "/position":
-            position = grid.get_position()
-
-            self.send_response(200)
-            self.send_header("Content-type", "application/json")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-
-            self.wfile.write(json.dumps(position).encode("utf-8"))
-    def log_message(self, format, *args):
-        pass
-
-def start_api():
-    server = HTTPServer(("localhost", 8000), PositionHandler)
-    server.serve_forever()
-
 security = TransportSecuritySettings(
     allowed_hosts = [
         "grid-agent.onrender.com",
@@ -69,7 +59,6 @@ security = TransportSecuritySettings(
     ],
 )
 if __name__ == "__main__":
-    threading.Thread(target = start_api, daemon=True).start()
     mcp.run(
         transport = "streamable-http",
         host = "0.0.0.0",

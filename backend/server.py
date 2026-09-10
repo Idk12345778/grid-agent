@@ -28,22 +28,26 @@ async def position(request: Request) :
 
 @mcp.tool()
 def move_up() -> bool:
-    """Move the agent up by one unit on the grid. Returns True if successful."""
+    """Move the agent up by one unit on the 5x5 grid.
+    Returns True if successful, False if the object is already at the top."""
     return grid.move_up()
 
 @mcp.tool()
 def move_down() -> bool:
-    """Move the agent down by one unit on the grid. Returns True if successful."""
+    """Move the agent down by one unit on the 5x5 grid. 
+    Returns True if successful, False if the object is already at the bottom."""
     return grid.move_down()
 
 @mcp.tool()
 def move_left() -> bool:
-    """Move the agent left by one unit on the grid. Returns True if successful."""
+    """Move the agent left by one unit on the 5x5 grid. 
+    Returns True if successful, False if the object is already at the left boundary."""
     return grid.move_left()
 
 @mcp.tool()
 def move_right() -> bool:
-    """Move the agent right by one unit on the grid. Returns True if successful."""
+    """Move the agent right by one unit on the 5x5 grid. 
+    Returns True if successful, False if the object is already at the right boundary."""
     return grid.move_right()
 
 @mcp.tool()
